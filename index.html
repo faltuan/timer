@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
-    <title>Focus Pro V11</title>
+    <title>Focus Timer</title>
     <link rel="manifest" href="manifest.json">
     <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@400;700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=Ubuntu+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@100;200;300;400;700;900&family=Inter:wght@100;200;300;400;700;900&family=JetBrains+Mono:wght@100;200;300;400;700;900&family=Montserrat:wght@100;200;300;400;700;900&family=Open+Sans:wght@100;200;300;400;700;900&family=Roboto+Mono:wght@100;200;300;400;700;900&family=Space+Mono:wght@100;200;300;400;700;900&family=Ubuntu+Mono:wght@100;200;300;400;700;900&family=Orbitron:wght@100;200;300;400;700;900&display=swap"
         rel="stylesheet">
     <style>
         :root {
@@ -17,10 +17,15 @@
             --pulse-color: #1a1a1a;
             --ms-color: rgba(255, 255, 255, 0.3);
             --chip-bg: #111111;
-            --text-font: 'Montserrat', sans-serif;
+            --text-font: 'inter', sans-serif;
             --font-weight: 700;
             --display-size: 20vw;
-            --anim-speed: 2s;
+            --anim-speed: 1s;
+            --date-size: 5vw;
+            --date-weight: 400;
+            --date-color: #ffffff;
+            --ms-weight: 400;
+            --date-margin: 1vw;
         }
 
         * {
@@ -55,6 +60,20 @@
             display: none !important;
         }
 
+        #date-display {
+            font-size: var(--date-size);
+            font-weight: var(--date-weight);
+            margin-bottom: var(--date-margin);
+            /* Ayarlardan gelen değişken */
+            color: var(--date-color);
+            opacity: 0.8;
+            display: none;
+            text-align: center;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+        }
+
         #display-wrapper {
             display: flex;
             flex-direction: column;
@@ -75,12 +94,25 @@
             align-items: center;
             text-align: center;
             white-space: nowrap;
+            display: flex;
+            align-items: baseline;
+            /* Sayıların alt çizgisini hizalar, simetri sağlar */
+            justify-content: center;
+            font-variant-numeric: tabular-nums;
+            /* Rakam genişliklerini eşitler */
         }
+
 
         .sub-seconds {
             font-size: 0.4em;
             color: var(--ms-color);
-            margin-left: 0.1em;
+            margin-left: 10px;
+            width: 2ch;
+            text-align: left;
+            display: inline-block;
+            font-weight: var(--ms-weight);
+            /* Artık değişkenden besleniyor */
+            font-variant-numeric: tabular-nums;
         }
 
         #status-text {
@@ -148,7 +180,7 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
-            opacity: 0.15;
+            opacity: 0.65;
             cursor: pointer;
             z-index: 1100;
             padding: 10px;
@@ -265,7 +297,7 @@
     <div id="gear" class="ui-element" onclick="toggleSettings(event)">⚙️</div>
 
     <div id="fullscreen-ghost" class="ui-element" onclick="toggleFullscreen(event)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
             </path>
         </svg>
@@ -280,6 +312,7 @@
     <div id="display-wrapper">
         <div id="status-text">SÜRE DOLDU</div>
         <div id="chip-container" class="chip-container ui-element"></div>
+        <div id="date-display"></div>
         <div id="main-display">25:00</div>
         <div class="controls ui-element">
             <button id="start-btn" onclick="toggleStart(event)">
@@ -313,18 +346,24 @@
         <div class="setting-item">
             <label>Görünüm</label>
             <select id="f-family" onchange="applySettings()">
+                <option value="'Inter'">Inter</option>
                 <option value="'Montserrat'">Montserrat</option>
                 <option value="'JetBrains Mono'">JetBrains Mono</option>
-                <option value="'Orbitron'">Orbitron</option>
+                <option value="'Orbitron'">Orbitron [Digital]</option>
                 <option value="'Bebas Neue'">Bebas Neue</option>
+                <option value="'Roboto Mono'">Roboto Mono</option>
+                <option value="'Fira Code'">Fira Code</option>
+                <option value="'Space Mono'">Space Mono</option>
+                <option value="'Ubuntu Mono'">Ubuntu Mono</option>
+                <option value="'Open Sans'">Open Sans</option>
             </select>
             <div class="setting-row">
-                <span>Boyut: <span id="v-size" class="val-badge">20vw</span></span>
-                <input type="range" id="f-size" min="5" max="50" value="20" oninput="applySettings()">
+                <span>Boyut: <span id="v-size" class="val-badge">18vw</span></span>
+                <input type="range" id="f-size" min="1" max="50" value="18" oninput="applySettings()">
             </div>
             <div class="setting-row">
-                <span>Kalınlık: <span id="v-weight" class="val-badge">700</span></span>
-                <input type="range" id="f-weight" min="100" max="900" step="100" value="700" oninput="applySettings()">
+                <span>Kalınlık: <span id="v-weight" class="val-badge">900</span></span>
+                <input type="range" id="f-weight" min="100" max="900" step="100" value="900" oninput="applySettings()">
             </div>
         </div>
 
@@ -336,12 +375,12 @@
             <label style="display: flex; gap:10px; cursor: pointer;"><input type="checkbox" id="vibrate-on" checked>
                 Bitişte Titreşimi Başlat</label>
             <div class="setting-row">
-                <span>Bitiş Puls Rengi</span>
-                <input type="color" id="c-pulse" value="#1a1a1a" onchange="applySettings()">
+                <span>Geri Sayım Bitiş Rengi</span>
+                <input type="color" id="c-pulse" value="#a3a3a3" onchange="applySettings()">
             </div>
             <div class="setting-row">
-                <span>Animasyon Hızı (sn): <span id="v-anim" class="val-badge">2s</span></span>
-                <input type="number" id="p-speed" value="2" step="0.5" style="width:70px" onchange="applySettings()">
+                <span>Animasyon Hızı (sn): <span id="v-anim" class="val-badge">1s</span></span>
+                <input type="number" id="p-speed" value="1" step="0.5" style="width:70px" onchange="applySettings()">
             </div>
         </div>
 
@@ -351,12 +390,53 @@
                     onchange="applySettings()"></div>
             <div class="setting-row"><span>Yazı</span><input type="color" id="c-txt" value="#ffffff"
                     onchange="applySettings()"></div>
-            <div class="setting-row"><span>Milisaniye</span><input type="color" id="c-ms" value="#666666"
+            <div class="setting-row"><span>Milisaniye</span><input type="color" id="c-ms" value="#ff0080"
                     onchange="applySettings()"></div>
             <div class="setting-row"><span>Preset Buton (Chip)</span><input type="color" id="c-chip" value="#111111"
                     onchange="applySettings()"></div>
+            <div class="setting-row">
+                <span>Ms Kalınlığı: <span id="v-ms-weight" class="val-badge">400</span></span>
+                <input type="range" id="ms-f-weight" min="100" max="900" step="100" value="400"
+                    oninput="applySettings()">
+            </div>
         </div>
 
+        <div class="setting-item">
+            <label>Tarih Ayarları (Sadece Saat Modu)</label>
+            <label style="display: flex; gap:10px; cursor: pointer;"><input type="checkbox" checked id="date-on"
+                    onchange="applySettings()"> Tarihi Göster</label>
+            <div class="setting-row">
+                <span>Tarih Boyutu: <span id="v-date-size" class="val-badge">3vw</span></span>
+                <input type="range" id="date-f-size" min="1" max="40" value="3" oninput="applySettings()">
+            </div>
+            <div class="setting-row">
+                <span>Tarih Kalınlığı: <span id="v-date-weight" class="val-badge">200</span></span>
+                <input type="range" id="date-f-weight" min="100" max="900" step="100" value="200"
+                    oninput="applySettings()">
+            </div>
+            <div class="setting-row">
+                <span>Tarih Rengi</span>
+                <input type="color" id="c-date" value="#ff0080" onchange="applySettings()">
+            </div>
+            <div class="setting-row">
+                <span>Tarih Boşluğu: <span id="v-date-margin" class="val-badge">1vw</span></span>
+                <input type="range" id="date-margin-slider" min="0" max="15" step="0.5" value="2"
+                    oninput="applySettings()">
+            </div>
+            <select id="date-format" onchange="applySettings()">
+                <option value="numeric">Sayısal (02.02.2026)</option>
+                <option value="textual">Metin (2 Şubat 2026)</option>
+            </select>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
+                <label style="font-size: 0.8rem;"><input type="checkbox" id="date-year" checked
+                        onchange="applySettings()"> Yılı Göster</label>
+                <label style="font-size: 0.8rem;"><input type="checkbox" id="date-day" onchange="applySettings()"> Günü
+                    Göster</label>
+                <label style="font-size: 0.8rem;"><input type="checkbox" id="date-abbrev" onchange="applySettings()">
+                    Günü Kısalt</label>
+            </div>
+        </div>
         <div class="setting-item">
             <label>Preset Yönetimi</label>
             <div id="chip-manager-list"></div>
@@ -373,6 +453,10 @@
         <button onclick="toggleSettings(event)"
             style="width:100%; background: white; color: black; font-weight: 800; border:none; padding:15px; border-radius:10px;">KAYDET
             VE KAPAT</button>
+        <button onclick="confirmReset()"
+            style="width:100%; background: #330000; color: #ff4444; border: 1px solid #440000; margin-top: 20px; font-size: 0.8rem;">
+            TÜM AYARLARI SIFIRLA
+        </button>
     </div>
 
     <script>
@@ -393,6 +477,34 @@
             if (vibrateInterval) { clearInterval(vibrateInterval); vibrateInterval = null; }
             if (navigator.vibrate) navigator.vibrate(0);
             vibrationStartAt = null;
+        }
+        function getFormattedDate() {
+            const now = new Date();
+            const format = document.getElementById('date-format').value;
+            const showYear = document.getElementById('date-year').checked;
+            const showDay = document.getElementById('date-day').checked;
+            const abbrevDay = document.getElementById('date-abbrev').checked;
+
+            let dateStr = "";
+
+            if (format === 'numeric') {
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                dateStr = `${day}.${month}`;
+                if (showYear) dateStr += `.${now.getFullYear()}`;
+            } else {
+                const day = String(now.getDate()).padStart(2, '0');
+                const monthText = now.toLocaleDateString('tr-TR', { month: 'long' });
+                dateStr = `${day} ${monthText}`;
+                if (showYear) dateStr += ` ${now.getFullYear()}`;
+            }
+
+            if (showDay) {
+                let dayName = now.toLocaleDateString('tr-TR', { weekday: abbrevDay ? 'short' : 'long' });
+                if (abbrevDay) dayName = dayName.replace('.', ''); // Noktayı temizle
+                dateStr += ` ${dayName}`;
+            }
+            return dateStr;
         }
 
         function startVibrationLoop() {
@@ -479,74 +591,137 @@
         function tick() { if (!isRunning && mode !== 'clock') return; const now = performance.now(); elapsedTime = now - startTime; if (mode === 'timer' && (timerDuration - elapsedTime <= 0)) { finish(); return; } updateDisplay(); animationFrame = requestAnimationFrame(tick); }
         function updateDisplay() {
             const disp = document.getElementById('main-display');
-            if (mode === 'clock') { disp.innerText = new Date().toLocaleTimeString('tr-TR', { hour12: false }); return; }
+            const dateDisp = document.getElementById('date-display');
+
+            if (mode === 'clock') {
+                disp.innerText = new Date().toLocaleTimeString('tr-TR', { hour12: false });
+                if (document.getElementById('date-on').checked) {
+                    dateDisp.style.display = 'block';
+                    dateDisp.innerText = getFormattedDate();
+                } else {
+                    dateDisp.style.display = 'none';
+                }
+                return;
+            }
+
+            dateDisp.style.display = 'none';
+
             let displayTime = Math.max(0, (mode === 'timer' ? timerDuration - elapsedTime : elapsedTime));
             let totalSec = Math.floor(displayTime / 1000);
             let h = Math.floor(totalSec / 3600), m = Math.floor((totalSec % 3600) / 60), s = totalSec % 60;
             let ms = Math.floor((displayTime % 1000) / 10).toString().padStart(2, '0');
-            let timeStr = (h > 0) ? `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}` : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            disp.innerHTML = `${timeStr}${document.getElementById('ms-on').checked ? `<span class="sub-seconds">${ms}</span>` : ''}`;
+
+            let timeStr = (h > 0)
+                ? `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+                : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            // Milisaniye ayrı bir span içinde, böylece küçük ve farklı renkte kalır
+            const msSpan = document.getElementById('ms-on').checked
+                ? `<span class="sub-seconds">${ms}</span>`
+                : '';
+
+            disp.innerHTML = `${timeStr}${msSpan}`;
         }
         function setMode(m, e) { if (e) e.stopPropagation(); mode = m; document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m)); document.getElementById('chip-container').style.display = (m === 'timer' ? 'flex' : 'none'); reset(); if (m === 'clock') tick(); }
         function toggleSettings(e) { if (e) e.stopPropagation(); const p = document.getElementById('settings-panel'); p.style.display = (p.style.display === 'flex' ? 'none' : 'flex'); }
         function toggleFullscreen(e) { if (e) e.stopPropagation(); const doc = document.documentElement; if (!document.fullscreenElement) doc.requestFullscreen(); else document.exitFullscreen(); }
         function applySettings() {
             const root = document.documentElement;
-            const size = document.getElementById('f-size').value, weight = document.getElementById('f-weight').value, vLvl = document.getElementById('vib-lvl').value;
-            root.style.setProperty('--pulse-color', document.getElementById('c-pulse').value);
-            root.style.setProperty('--anim-speed', document.getElementById('p-speed').value + 's');
-            document.getElementById('v-anim').innerText = document.getElementById('p-speed').value + 's';
-            root.style.setProperty('--text-font', document.getElementById('f-family').value);
-            root.style.setProperty('--font-weight', weight);
-            root.style.setProperty('--display-size', size + 'vw');
+
+            // --- Değerleri Al ---
+            const clockSize = document.getElementById('f-size').value;
+            const clockWeight = document.getElementById('f-weight').value;
+            const dateSize = document.getElementById('date-f-size').value;
+            const dateWeight = document.getElementById('date-f-weight').value;
+            const dateMargin = document.getElementById('date-margin-slider').value; // Yeni
+            const msWeight = document.getElementById('ms-f-weight').value;
+            const vLvl = document.getElementById('vib-lvl').value;
+            const animSpeed = document.getElementById('p-speed').value;
+            const fontFamily = document.getElementById('f-family').value;
+
+            // --- CSS Uygula ---
+            root.style.setProperty('--display-size', clockSize + 'vw');
+            root.style.setProperty('--date-size', dateSize + 'vw');
+            root.style.setProperty('--date-margin', dateMargin + 'vw'); // Yeni
+            root.style.setProperty('--font-weight', clockWeight);
+            root.style.setProperty('--date-weight', dateWeight);
+            root.style.setProperty('--ms-weight', msWeight);
+            root.style.setProperty('--date-color', document.getElementById('c-date').value);
             root.style.setProperty('--bg-color', document.getElementById('c-bg').value);
             root.style.setProperty('--accent-color', document.getElementById('c-txt').value);
             root.style.setProperty('--ms-color', document.getElementById('c-ms').value);
             root.style.setProperty('--chip-bg', document.getElementById('c-chip').value);
-            document.getElementById('v-size').innerText = size + 'vw';
-            document.getElementById('v-weight').innerText = weight;
-            document.getElementById('v-vib-lvl').innerText = vLvl;
-            saveConfig(); updateDisplay();
+            root.style.setProperty('--pulse-color', document.getElementById('c-pulse').value);
+            root.style.setProperty('--text-font', fontFamily);
+            root.style.setProperty('--anim-speed', animSpeed + 's');
+
+            // --- Badge Güncelle ---
+            if (document.getElementById('v-size')) document.getElementById('v-size').innerText = clockSize + 'vw';
+            if (document.getElementById('v-date-size')) document.getElementById('v-date-size').innerText = dateSize + 'vw';
+            if (document.getElementById('v-date-margin')) document.getElementById('v-date-margin').innerText = dateMargin + 'vw';
+            if (document.getElementById('v-weight')) document.getElementById('v-weight').innerText = clockWeight;
+            if (document.getElementById('v-date-weight')) document.getElementById('v-date-weight').innerText = dateWeight;
+            if (document.getElementById('v-ms-weight')) document.getElementById('v-ms-weight').innerText = msWeight;
+            if (document.getElementById('v-anim')) document.getElementById('v-anim').innerText = animSpeed + 's';
+            if (document.getElementById('v-vib-lvl')) document.getElementById('v-vib-lvl').innerText = vLvl;
+
+            saveConfig();
+            updateDisplay();
         }
+
         function saveConfig() {
             const cfg = {
-                // Preset ve Zaman Ayarları
-                presets: presets,
-                selectedPresetIdx: selectedPresetIdx,
+                presets, selectedPresetIdx,
                 h: document.getElementById('h-in').value,
                 m: document.getElementById('m-in').value,
                 s: document.getElementById('s-in').value,
-
-                // Font ve Boyut Ayarları
                 font: document.getElementById('f-family').value,
                 weight: document.getElementById('f-weight').value,
                 size: document.getElementById('f-size').value,
-
-                // Renk Ayarları
+                dateSize: document.getElementById('date-f-size').value,
+                dateWeight: document.getElementById('date-f-weight').value,
+                dateMargin: document.getElementById('date-margin-slider').value, // Yeni
+                dateColor: document.getElementById('c-date').value,
+                msWeight: document.getElementById('ms-f-weight').value,
                 c_bg: document.getElementById('c-bg').value,
                 c_txt: document.getElementById('c-txt').value,
                 c_ms: document.getElementById('c-ms').value,
                 c_chip: document.getElementById('c-chip').value,
-                c_pulse: document.getElementById('c-pulse').value, // Yeni eklenen
-
-                // Titreşim ve Animasyon Ayarları
-                pSpeed: document.getElementById('p-speed').value,  // Yeni eklenen
+                c_pulse: document.getElementById('c-pulse').value,
+                pSpeed: document.getElementById('p-speed').value,
                 vLvl: document.getElementById('vib-lvl').value,
                 vibrate: document.getElementById('vibrate-on').checked,
-
-                // Genel Mod Ayarları
                 pause: document.getElementById('pause-on').checked,
-                ms: document.getElementById('ms-on').checked
+                ms: document.getElementById('ms-on').checked,
+                showDate: document.getElementById('date-on').checked,
+                dateFormat: document.getElementById('date-format').value,
+                dateYear: document.getElementById('date-year').checked,
+                dateDay: document.getElementById('date-day').checked,
+                dateAbbrev: document.getElementById('date-abbrev').checked
             };
-
-            // Veriyi 'focus_pro_v11_cfg' anahtarıyla yerel depoya kaydet
             localStorage.setItem('focus_pro_v11_cfg', JSON.stringify(cfg));
+        }
+        function confirmReset() {
+            if (confirm("Tüm ayarlarınız silinecek ve varsayılan değerlere dönülecek. Emin misiniz?")) {
+                localStorage.removeItem('focus_pro_v11_cfg');
+                location.reload(); // Sayfayı yenileyerek tertemiz başlatır
+            }
         }
         function loadConfig() {
             const saved = localStorage.getItem('focus_pro_v11_cfg'); if (!saved) { applySettings(); return; }
             const d = JSON.parse(saved); presets = d.presets || [5, 20, 50]; selectedPresetIdx = d.selectedPresetIdx;
             document.getElementById('c-pulse').value = d.c_pulse || "#1a1a1a";
             document.getElementById('p-speed').value = d.pSpeed || 2;
+            document.getElementById('date-on').checked = d.showDate || false;
+            document.getElementById('date-format').value = d.dateFormat || 'numeric';
+            document.getElementById('date-year').checked = d.dateYear !== undefined ? d.dateYear : true;
+            document.getElementById('date-day').checked = d.dateDay || false;
+            document.getElementById('date-abbrev').checked = d.dateAbbrev || false;
+            document.getElementById('date-margin-slider').value = d.dateMargin || 1;
+            document.getElementById('date-f-size').value = d.dateSize || (d.size / 6) || 10;
+            document.getElementById('date-f-weight').value = d.dateWeight || 400;
+            document.getElementById('c-date').value = d.dateColor || "#ffffff";
+            document.getElementById('ms-f-weight').value = d.msWeight || 400;
             document.getElementById('h-in').value = d.h; document.getElementById('m-in').value = d.m; document.getElementById('s-in').value = d.s;
             document.getElementById('f-family').value = d.font; document.getElementById('f-weight').value = d.weight; document.getElementById('f-size').value = d.size;
             document.getElementById('c-bg').value = d.c_bg; document.getElementById('c-txt').value = d.c_txt; document.getElementById('c-ms').value = d.c_ms; document.getElementById('c-chip').value = d.c_chip || "#111111";
