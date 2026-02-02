@@ -1,7 +1,7 @@
 {
-  "name": "Focus Pro Timer",
-  "short_name": "FocusPro",
-  "start_url": "index9.html",
+  "name": "Focus Timer",
+  "short_name": "Focus Timer",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
