@@ -1,0 +1,15 @@
+{
+  "name": "Focus Pro Timer",
+  "short_name": "FocusPro",
+  "start_url": "index9.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
