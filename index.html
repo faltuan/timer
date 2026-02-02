@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <title>Focus Pro V11</title>
+    <link rel="manifest" href="manifest.json">
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@400;700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=Ubuntu+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap"
         rel="stylesheet">
@@ -381,7 +382,11 @@
         let vibrateInterval = null, vibrationStartAt = null;
 
         const icons = { play: '<path d="M8 5v14l11-7z"/>', pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' };
-
+        if ('service-worker' in navigator) {
+            navigator.service_worker.register('service-worker.js')
+                .then(() => console.log("Service Worker Kayıtlı"))
+                .catch(err => console.log("Hata:", err));
+        }
         window.onload = () => { loadConfig(); renderChips(); updateDisplay(); };
 
         function stopVibration() {
